@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="abastecimientos.view_crear_abastecimiento_wizard" model="ir.ui.view">
+        <field name="name">Crear abastecimiento</field>
+        <field name="model">abastecimientos.crear_abastecimiento</field>
+        <field name="arch" type="xml">
+            <form string="Generar envío">
+                <group>
+                    <group>
+                        <field name="location_id"/>
+                    </group>
+<!--
+                    <group>
+                        <field name="picking_type_id"/>
+                    </group>
+-->
+                </group>
+                <footer>
+                    <button name="crear_abastecimiento" string="Crear abastecimiento" type="object" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="act_crear_abastecimiento">
+        <field name="name">Crear abastecimiento</field>
+        <field name="res_model">abastecimientos.crear_abastecimiento</field>
+        <field name="src_model">stock.location</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

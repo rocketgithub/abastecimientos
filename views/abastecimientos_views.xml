@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="abastecimientos_ruta_tree">
+            <field name="name">abastecimientos.ruta.tree</field>
+            <field name="model">abastecimientos.ruta</field>
+            <field name="arch" type="xml">
+                <tree string="Rutas">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+		        </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="abastecimientos_ruta_form">
+            <field name="name">abastecimientos.ruta.form</field>
+            <field name="model">abastecimientos.ruta</field>
+            <field name="arch" type="xml">
+                <form string="Rutas">
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="employee_id"/>
+                        </group>
+                    </group>
+				</form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="abastecimientos.ruta_action_window">
+            <field name="name">Rutas</field>
+            <field name="res_model">abastecimientos.ruta</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_ruta" name="Rutas" parent="stock.menu_warehouse_config" action="abastecimientos.ruta_action_window"/>
+
+        <record id="abastecimientos_view_location_form" model="ir.ui.view">
+            <field name="name">abastecimientos.stock.location.form</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+                <field name="return_location" position="after">
+                    <field name="dias_despacho_ids">
+                        <tree string="Dias de despacho" editable="bottom">
+                            <field name="dia_semana"/>
+                            <field name="ruta_id"/>
+                        </tree>
+                        <form string="Dias de despacho">
+                            <field name="dia_semana"/>
+                            <field name="ruta_id"/>
+                        </form>
+                    </field>
+                    <field name="picking_type_id"/>
+<!--                    <field name="picking_type_id" attrs="{'required': [('dia_semana', 'in', ['0','1','2','3','4','5'])]}"/>-->
+                    <field name="ubicacion_consumibles_id"/>
+                    <field name="categoria_insumos_id"/>
+                    <button name="%(act_crear_abastecimiento)d" string="Generar envío"
+                        type="action" class="btn-primary"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>
