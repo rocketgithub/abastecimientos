@@ -18,9 +18,9 @@ class Location(models.Model):
     ])
     dias_despacho_ids = fields.One2many('abastecimientos.despacho', 'location_id', string='Dias de despacho')
     ubicacion_consumibles_id = fields.Many2one('stock.location', 'Ubicación de consumibles')
-    categoria_insumos_id = fields.Many2one('product.category', 'Categoria de insumos')
+    categoria_insumos_id = fields.Many2one('product.category', 'Categoria de consumibles')
 
-    def crear_abastecimiento(self, location_id, location_dest_id, picking_type_id, ubicacion_consumibles_id):
+    def crear_abastecimiento(self, location_id, location_dest_id, picking_type_id, ubicacion_consumibles_id, ruta_id):
         lineas = []
         for orderpoint in self.env['stock.warehouse.orderpoint'].search([('location_id', '=', location_dest_id)]):
             existencias = orderpoint.product_id.with_context({'location' : location_dest_id}).qty_available
@@ -34,10 +34,12 @@ class Location(models.Model):
                 lineas.append((0, 0, {
                     'name': '/',
                     'product_id': orderpoint.product_id.id,
-                    'product_uom_qty': orderpoint.product_max_qty - existencias,
+                    #'product_uom_qty': orderpoint.product_max_qty - existencias,
                     'product_uom': orderpoint.product_id.uom_po_id.id,
+                    'product_uom_qty': orderpoint.product_id.uom_id._compute_quantity(orderpoint.product_max_qty - existencias, orderpoint.product_id.uom_po_id),
                     'location_id': location_id,
                     'location_dest_id': ubicacion_destino_id,
+                    #'ruta_id': ruta_id,
                     'state': 'draft',
                 }))
         
@@ -46,6 +48,7 @@ class Location(models.Model):
                 'location_id': location_id,
                 'location_dest_id': location_dest_id,
                 'picking_type_id': picking_type_id,
+                'ruta_id': ruta_id,
                 'generado':True,
             })
 
@@ -54,7 +57,7 @@ class Location(models.Model):
 
 
     @api.multi
-    def generar_abastecimiento_planificado(self, location_id=""):
+    def generar_abastecimiento_planificado(self, location_id, location_dest_id=None):
         if location_id != "":
             hoy = date.today().weekday()
 
@@ -69,20 +72,26 @@ class Location(models.Model):
             # 5 - Sabado    5 - 4 -> Martes
             # 6 - Domingo   6 - 4 -> Miercoles (No deberia aplicar)
 
-#            for despacho_id in self.dias_despacho_ids
             if hoy < 4:
                 dia_semana = str(hoy + 2)
             elif hoy >= 4:
                 dia_semana = str(hoy - 4)
 
-            ubicacion_ids = []
-            for despacho in self.env['abastecimientos.despacho'].search([('dia_semana', '=', dia_semana)]):
-                ubicaciones_ids.append(despacho.location_id.id)
-            for ubicacion in self.browse(ubicacion_ids):
-                self.crear_abastecimiento(location_id, ubicacion.id, ubicacion.picking_type_id.id, ubicacion.ubicacion_consumibles_id.id)
+            despachos = []
+            filtro = [('dia_semana', '=', dia_semana)]
+            if location_dest_id:
+                filtro.append(('location_id','=',location_dest_id))
+
+            for despacho in self.env['abastecimientos.despacho'].search(filtro):
+                despachos.append({'ubicacion_id': despacho.location_id, 'ruta_id': despacho.ruta_id})
+
+            logging.warn(despachos)
+            for despacho in despachos:
+                self.crear_abastecimiento(location_id, despacho['ubicacion_id'].id, despacho['ubicacion_id'].picking_type_id.id, despacho['ubicacion_id'].ubicacion_consumibles_id.id, despacho['ruta_id'].id)
 
 
 class Picking(models.Model):
     _inherit = "stock.picking"
 
     generado = fields.Boolean('Generado')
+    ruta_id = fields.Many2one('abastecimientos.ruta', 'Ruta de despacho')

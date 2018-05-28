@@ -17,6 +17,5 @@ class CrearAbastecimiento(models.TransientModel):
             location_dest_id = self._context.get('active_id')
             ubicacion = self.env['stock.location'].search([('id', '=', location_dest_id)])[0]
             for wizard in self:
-                stock_location_obj = self.env['stock.location']
-                stock_location_obj.crear_abastecimiento(wizard.location_id.id, location_dest_id, ubicacion.picking_type_id.id, ubicacion.ubicacion_consumibles_id.id)
+                self.env['stock.location'].generar_abastecimiento_planificado(wizard.location_id.id, location_dest_id)
 

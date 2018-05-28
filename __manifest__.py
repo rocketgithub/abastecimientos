@@ -19,5 +19,6 @@
     'data': [
         'wizard/crear_abastecimiento.xml',
         'views/abastecimientos_views.xml',
+        'views/stock_picking_views.xml',
     ],
 }

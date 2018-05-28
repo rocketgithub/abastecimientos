@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="abastecimientos_vpicktree" model="ir.ui.view">
+            <field name="name">abastecimientos.stock.picking.tree</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree"/>
+            <field name="arch" type="xml">
+                <field name="location_dest_id" position="after">
+                    <field name="ruta_id"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="abastecimientos_view_picking_form" model="ir.ui.view">
+            <field name="name">abastecimientos.stock.picking.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="location_id" position="after">
+                    <field name="ruta_id"/>
+                </field>
+            </field>
+        </record>
+
+</odoo>

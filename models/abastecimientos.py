@@ -21,4 +21,4 @@ class Despacho(models.Model):
         ('4', 'Viernes'),
         ('5', 'Sabado'),
     ])
-    ruta_id = fields.Many2one('abastecimientos.ruta', 'Ruta')
+    ruta_id = fields.Many2one('abastecimientos.ruta', 'Ruta de despacho')
